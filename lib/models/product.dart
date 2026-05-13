@@ -9,6 +9,8 @@ class Product {
   final double? fat;
   final double? sugar;
   final double? saturatedFat;
+  final double? ServingSize;
+  double? servingGrams;
 
   Product({
     required this.id,
@@ -21,6 +23,8 @@ class Product {
     this.fat,
     this.sugar,
     this.saturatedFat,
+    this.ServingSize,
+    this.servingGrams,
   });
 
   factory Product.fromSearchJson(Map<String, dynamic> json) {
@@ -36,6 +40,7 @@ class Product {
       fat: _parseNutrimentDouble(nutriments['fat_serving']),
       sugar: _parseNutrimentDouble(nutriments['sugars_serving']),
       saturatedFat: _parseNutrimentDouble(nutriments['saturated-fat_serving']),
+      ServingSize: _parseNutrimentDouble(nutriments['serving_size']),
     );
   }
 
@@ -51,6 +56,7 @@ class Product {
       fat: _parseDouble(json['servingFat']),
       sugar: _parseDouble(json['servingSugar']),
       saturatedFat: _parseDouble(json['servingSatFat']),
+      ServingSize: _parseNutrimentDouble(json['serving_size']),
     );
   }
 

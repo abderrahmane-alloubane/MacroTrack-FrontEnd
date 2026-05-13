@@ -3,6 +3,7 @@ import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../services/api_service.dart';
 import '../models/product.dart';
+import '../widgets/food_card.dart';
 
 class SearchPage extends StatefulWidget {
   final String? initialMealType;
@@ -72,6 +73,10 @@ class _SearchPageState extends State<SearchPage> {
 
   void _showAddSheet(Product product) {
     final mealType = _selectedMealType ?? 'Breakfast';
+    final defaultGrams = product.ServingSize ?? 100;
+    final servingController = TextEditingController(
+      text: defaultGrams.toStringAsFixed(0),
+    );
 
     showModalBottomSheet(
       context: context,
@@ -82,6 +87,15 @@ class _SearchPageState extends State<SearchPage> {
       builder: (ctx) {
         return StatefulBuilder(
           builder: (ctx, setSheetState) {
+            final parsedServing = double.tryParse(servingController.text);
+            final ratio = (parsedServing != null && parsedServing > 0)
+                ? parsedServing / defaultGrams
+                : 1.0;
+            final scaledCalories = (product.calories * ratio).round();
+            final scaledCarbs = product.carbs != null ? product.carbs! * ratio : null;
+            final scaledProtein = product.protein != null ? product.protein! * ratio : null;
+            final scaledFat = product.fat != null ? product.fat! * ratio : null;
+
             return Padding(
               padding: const EdgeInsets.fromLTRB(24, 16, 24, 32),
               child: Column(
@@ -113,8 +127,51 @@ class _SearchPageState extends State<SearchPage> {
                       style: const TextStyle(color: AppColors.textGray),
                     ),
                   ],
-                  const SizedBox(height: 16),
-                  _macroChips(product),
+                  const SizedBox(height: 12),
+                  Row(
+                    children: [
+                      Text(
+                        'Per ${product.servingSize ?? "${defaultGrams.toStringAsFixed(0)}g"}',
+                        style: const TextStyle(
+                          color: AppColors.textGray,
+                          fontSize: 13,
+                        ),
+                      ),
+                      const Spacer(),
+                      SizedBox(
+                        width: 100,
+                        height: 36,
+                        child: TextField(
+                          controller: servingController,
+                          keyboardType: TextInputType.number,
+                          style: const TextStyle(
+                            color: AppColors.textWhite,
+                            fontSize: 14,
+                          ),
+                          decoration: InputDecoration(
+                            filled: true,
+                            fillColor: AppColors.surfaceBg,
+                            contentPadding: const EdgeInsets.symmetric(
+                              horizontal: 10,
+                              vertical: 8,
+                            ),
+                            border: OutlineInputBorder(
+                              borderRadius: BorderRadius.circular(8),
+                              borderSide: BorderSide.none,
+                            ),
+                            suffixText: 'g',
+                            suffixStyle: const TextStyle(
+                              color: AppColors.textDarkGray,
+                              fontSize: 13,
+                            ),
+                          ),
+                          onChanged: (_) => setSheetState(() {}),
+                        ),
+                      ),
+                    ],
+                  ),
+                  const SizedBox(height: 12),
+                  _macroChips(scaledCalories, scaledCarbs, scaledProtein, scaledFat),
                   const SizedBox(height: 20),
                   const Text(
                     'Add to',
@@ -153,7 +210,16 @@ class _SearchPageState extends State<SearchPage> {
                     width: double.infinity,
                     height: 50,
                     child: ElevatedButton.icon(
-                      onPressed: () => _addToDiary(product, mealType, ctx),
+                      onPressed: () {
+                        product.servingGrams = parsedServing ?? defaultGrams;
+                        _addToDiary(
+                          product, mealType, ctx,
+                          calories: scaledCalories,
+                          carbs: scaledCarbs,
+                          protein: scaledProtein,
+                          fat: scaledFat,
+                        );
+                      },
                       icon: const Icon(Icons.add),
                       label: const Text('Add to Diary'),
                     ),
@@ -167,12 +233,12 @@ class _SearchPageState extends State<SearchPage> {
     );
   }
 
-  Widget _macroChips(Product p) {
+  Widget _macroChips(int calories, double? carbs, double? protein, double? fat) {
     final items = [
-      if (p.calories > 0) _chip('${p.calories} cal', AppColors.calorieColor),
-      if (p.carbs != null) _chip('C: ${p.carbs!.toStringAsFixed(0)}g', AppColors.carbColor),
-      if (p.protein != null) _chip('P: ${p.protein!.toStringAsFixed(0)}g', AppColors.proteinColor),
-      if (p.fat != null) _chip('F: ${p.fat!.toStringAsFixed(0)}g', AppColors.fatColor),
+      if (calories > 0) _chip('$calories cal', AppColors.calorieColor),
+      if (carbs != null) _chip('C: ${carbs.toStringAsFixed(0)}g', AppColors.carbColor),
+      if (protein != null) _chip('P: ${protein.toStringAsFixed(0)}g', AppColors.proteinColor),
+      if (fat != null) _chip('F: ${fat.toStringAsFixed(0)}g', AppColors.fatColor),
     ];
     return Wrap(
       spacing: 8,
@@ -201,7 +267,12 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   Future<void> _addToDiary(
-      Product product, String mealType, BuildContext sheetContext) async {
+    Product product, String mealType, BuildContext sheetContext, {
+    int? calories,
+    double? carbs,
+    double? protein,
+    double? fat,
+  }) async {
     final today = DateTime.now();
     final dateKey =
         '${today.year}-${today.month.toString().padLeft(2, '0')}-${today.day.toString().padLeft(2, '0')}';
@@ -211,10 +282,10 @@ class _SearchPageState extends State<SearchPage> {
         date: dateKey,
         mealType: mealType,
         foodName: product.name,
-        calories: product.calories,
-        carbs: product.carbs,
-        protein: product.protein,
-        fat: product.fat,
+        calories: calories ?? product.calories,
+        carbs: carbs ?? product.carbs,
+        protein: protein ?? product.protein,
+        fat: fat ?? product.fat,
       );
       if (sheetContext.mounted) Navigator.pop(sheetContext);
       if (mounted) {
@@ -348,96 +419,11 @@ class _SearchPageState extends State<SearchPage> {
       itemCount: _results.length,
       itemBuilder: (context, index) {
         final product = _results[index];
-        return _FoodCard(
+        return FoodCard(
           product: product,
           onTap: () => _showAddSheet(product),
         );
       },
-    );
-  }
-}
-
-class _FoodCard extends StatelessWidget {
-  final Product product;
-  final VoidCallback onTap;
-
-  const _FoodCard({required this.product, required this.onTap});
-
-  @override
-  Widget build(BuildContext context) {
-    return Card(
-      margin: const EdgeInsets.only(bottom: 8),
-      child: InkWell(
-        onTap: onTap,
-        borderRadius: BorderRadius.circular(12),
-        child: Padding(
-          padding: const EdgeInsets.all(16),
-          child: Row(
-            children: [
-              Expanded(
-                child: Column(
-                  crossAxisAlignment: CrossAxisAlignment.start,
-                  children: [
-                    Text(
-                      product.name,
-                      style: const TextStyle(
-                        fontWeight: FontWeight.w600,
-                        fontSize: 15,
-                        color: AppColors.textWhite,
-                      ),
-                      maxLines: 2,
-                      overflow: TextOverflow.ellipsis,
-                    ),
-                    if (product.brand != null) ...[
-                      const SizedBox(height: 2),
-                      Text(
-                        product.brand!,
-                        style: const TextStyle(
-                            color: AppColors.textDarkGray, fontSize: 13),
-                      ),
-                    ],
-                    const SizedBox(height: 8),
-                    Row(
-                      children: [
-                        if (product.calories > 0)
-                          Text(
-                            '${product.calories} cal',
-                            style: const TextStyle(
-                              color: AppColors.calorieColor,
-                              fontWeight: FontWeight.w600,
-                              fontSize: 13,
-                            ),
-                          ),
-                        if (product.carbs != null) ...[
-                          const SizedBox(width: 12),
-                          _miniMacro('C', product.carbs!, AppColors.carbColor),
-                        ],
-                        if (product.protein != null) ...[
-                          const SizedBox(width: 8),
-                          _miniMacro(
-                              'P', product.protein!, AppColors.proteinColor),
-                        ],
-                        if (product.fat != null) ...[
-                          const SizedBox(width: 8),
-                          _miniMacro('F', product.fat!, AppColors.fatColor),
-                        ],
-                      ],
-                    ),
-                  ],
-                ),
-              ),
-              const Icon(Icons.chevron_right, color: AppColors.textDarkGray),
-            ],
-          ),
-        ),
-      ),
-    );
-  }
-
-  Widget _miniMacro(String label, double value, Color color) {
-    return Text(
-      '$label:${value.toStringAsFixed(0)}g',
-      style: TextStyle(color: color, fontSize: 12, fontWeight: FontWeight.w500),
     );
   }
 }

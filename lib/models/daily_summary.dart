@@ -32,6 +32,26 @@ class DailySummary {
     );
   }
 
+  DailySummary copyWith({
+    String? date,
+    int? totalCalories,
+    double? totalCarbs,
+    double? totalProtein,
+    double? totalFat,
+    int? calorieGoal,
+    List<MealGroup>? meals,
+  }) {
+    return DailySummary(
+      date: date ?? this.date,
+      totalCalories: totalCalories ?? this.totalCalories,
+      totalCarbs: totalCarbs ?? this.totalCarbs,
+      totalProtein: totalProtein ?? this.totalProtein,
+      totalFat: totalFat ?? this.totalFat,
+      calorieGoal: calorieGoal ?? this.calorieGoal,
+      meals: meals ?? this.meals,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
         'date': date,
         'totalCalories': totalCalories,
@@ -65,6 +85,18 @@ class MealGroup {
     );
   }
 
+  MealGroup copyWith({
+    String? name,
+    int? calories,
+    List<FoodItem>? items,
+  }) {
+    return MealGroup(
+      name: name ?? this.name,
+      calories: calories ?? this.calories,
+      items: items ?? this.items,
+    );
+  }
+
   Map<String, dynamic> toJson() => {
         'name': name,
         'calories': calories,
@@ -73,17 +105,27 @@ class MealGroup {
 }
 
 class FoodItem {
+  final String id;
   final String name;
   final int calories;
 
-  FoodItem({required this.name, required this.calories});
+  FoodItem({required this.id, required this.name, required this.calories});
 
   factory FoodItem.fromJson(Map<String, dynamic> json) {
+    String parseId(dynamic id) {
+      if (id == null) return '';
+      if (id is String) return id;
+      if (id is Map) return (id['\$oid'] as String?) ?? '';
+      return id.toString();
+    }
+
     return FoodItem(
+      id: parseId(json['id'] ?? json['_id']),
       name: json['name'] as String? ?? '',
       calories: json['calories'] as int? ?? 0,
     );
   }
 
-  Map<String, dynamic> toJson() => {'name': name, 'calories': calories};
+  Map<String, dynamic> toJson() =>
+      {'id': id, 'name': name, 'calories': calories};
 }

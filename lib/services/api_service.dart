@@ -4,12 +4,6 @@ import '../models/daily_summary.dart';
 
 class ApiService {
   ApiService._();
-
-  // Change this to match your backend URL:
-  //   Android emulator -> http://10.0.2.2:8080/api
-  //   iOS simulator    -> http://localhost:8080/api
-  //   Web / desktop    -> http://localhost:8080/api
-  //   Real device      -> http://<YOUR_IP>:8080/api
   static const String _baseUrl = 'http://localhost:8080/api';
 
   static String? token;
@@ -17,16 +11,16 @@ class ApiService {
   static bool isConnected = false;
 
   static Map<String, String> get _headers => {
-        'Content-Type': 'application/json',
-        if (token != null) 'Authorization': 'Bearer $token',
-      };
+    'Content-Type': 'application/json',
+    if (token != null) 'Authorization': 'Bearer $token',
+  };
 
   static Future<bool> checkConnection() async {
     try {
       final response = await http
           .get(Uri.parse('$_baseUrl/health'))
-      .timeout(const Duration(seconds: 5));
-    isConnected = response.statusCode == 200;
+          .timeout(const Duration(seconds: 5));
+      isConnected = response.statusCode == 200;
     } catch (_) {
       isConnected = false;
     }
@@ -34,7 +28,9 @@ class ApiService {
   }
 
   static Future<Map<String, dynamic>> login(
-      String email, String password) async {
+    String email,
+    String password,
+  ) async {
     final response = await http.post(
       Uri.parse('$_baseUrl/auth/login'),
       headers: {'Content-Type': 'application/json'},
@@ -62,7 +58,7 @@ class ApiService {
         'name': name,
         'email': email,
         'password': password,
-        if (calorieGoal != null) 'dailyCalorieGoal': calorieGoal,
+        'dailyCalorieGoal': ?calorieGoal,
       }),
     );
     final body = jsonDecode(response.body) as Map<String, dynamic>;
@@ -81,6 +77,8 @@ class ApiService {
     );
     if (response.statusCode != 200) {
       throw Exception('Failed to search products');
+    } else if (response.statusCode == 504) {
+      throw Exception('OpenFoodFacts failed');
     }
     return response.body;
   }
@@ -110,7 +108,8 @@ class ApiService {
       throw Exception('Failed to load daily data');
     }
     return DailySummary.fromJson(
-        jsonDecode(response.body) as Map<String, dynamic>);
+      jsonDecode(response.body) as Map<String, dynamic>,
+    );
   }
 
   static Future<void> addMealEntry({
@@ -130,9 +129,9 @@ class ApiService {
         'mealType': mealType,
         'foodName': foodName,
         'calories': calories,
-        if (carbs != null) 'carbs': carbs,
-        if (protein != null) 'protein': protein,
-        if (fat != null) 'fat': fat,
+        'carbs': ?carbs,
+        'protein': ?protein,
+        'fat': ?fat,
       }),
     );
     if (response.statusCode != 200) {
@@ -145,7 +144,7 @@ class ApiService {
       Uri.parse('$_baseUrl/meals/$id'),
       headers: _headers,
     );
-    if (response.statusCode != 200) {
+    if (response.statusCode != 200 && response.statusCode != 204) {
       throw Exception('Failed to delete meal');
     }
   }

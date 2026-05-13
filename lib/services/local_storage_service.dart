@@ -46,6 +46,11 @@ class LocalStorageService {
     return null;
   }
 
+  static Future<void> removeDailySummary(String date) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.remove('$_dailyPrefix$date');
+  }
+
   static Future<void> clear() async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove(_tokenKey);
