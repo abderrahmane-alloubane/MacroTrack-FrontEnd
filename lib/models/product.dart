@@ -28,19 +28,40 @@ class Product {
   });
 
   factory Product.fromSearchJson(Map<String, dynamic> json) {
+    String parseId(dynamic id) {
+      if (id == null) return '';
+      if (id is String) return id;
+      if (id is Map) return (id['\$oid'] as String?) ?? '';
+      return id.toString();
+    }
+
     final nutriments = json['nutriments'] as Map<String, dynamic>? ?? {};
     return Product(
-      id: (json['_id'] as String?) ?? '',
-      name: (json['product_name'] as String?) ?? 'Unknown',
+      id: parseId(json['_id'] ?? json['id']),
+      name: (json['product_name'] ?? json['name'] ?? 'Unknown') as String,
       brand: json['brands'] as String?,
       servingSize: json['serving_size'] as String?,
-      calories: _parseNutriment(nutriments['energy-kcal_serving']),
-      carbs: _parseNutrimentDouble(nutriments['carbohydrates_serving']),
-      protein: _parseNutrimentDouble(nutriments['proteins_serving']),
-      fat: _parseNutrimentDouble(nutriments['fat_serving']),
-      sugar: _parseNutrimentDouble(nutriments['sugars_serving']),
-      saturatedFat: _parseNutrimentDouble(nutriments['saturated-fat_serving']),
-      ServingSize: _parseNutrimentDouble(nutriments['serving_size']),
+      calories: _parseNutriment(
+        nutriments['energy-kcal_serving'] ?? json['calories'],
+      ),
+      carbs: _parseNutrimentDouble(
+        nutriments['carbohydrates_serving'] ?? json['carbs'],
+      ),
+      protein: _parseNutrimentDouble(
+        nutriments['proteins_serving'] ?? json['protein'],
+      ),
+      fat: _parseNutrimentDouble(
+        nutriments['fat_serving'] ?? json['fat'],
+      ),
+      sugar: _parseNutrimentDouble(
+        nutriments['sugars_serving'] ?? json['sugar'],
+      ),
+      saturatedFat: _parseNutrimentDouble(
+        nutriments['saturated-fat_serving'] ?? json['saturatedFat'],
+      ),
+      ServingSize: _parseNutrimentDouble(
+        nutriments['serving_size'] ?? json['servingSize'],
+      ),
     );
   }
 

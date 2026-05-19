@@ -4,8 +4,8 @@ import '../models/daily_summary.dart';
 
 class ApiService {
   ApiService._();
-  static const String _baseUrl = 'http://localhost:8080/api';
-
+  static const String _baseUrl = 'http://192.168.1.114:8080/api';
+  //static const String _baseUrl = 'http://localhost:8080/api';
   static String? token;
 
   static bool isConnected = false;
@@ -147,6 +147,20 @@ class ApiService {
     if (response.statusCode != 200 && response.statusCode != 204) {
       throw Exception('Failed to delete meal');
     }
+  }
+
+  static Future<List<DailySummary>> getWeeklySummaries() async {
+   final response = await http.get(
+      Uri.parse('$_baseUrl/meals/weekly'),
+      headers: _headers,
+    );
+    if (response.statusCode != 200) {
+      throw Exception('Failed to load weekly summary');
+    }
+    final list = jsonDecode(response.body) as List<dynamic>;
+    return list
+        .map((e) => DailySummary.fromJson(e as Map<String, dynamic>))
+        .toList();
   }
 
   static void logout() {

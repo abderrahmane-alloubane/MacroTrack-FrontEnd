@@ -22,6 +22,7 @@ class _HomePageState extends State<HomePage> {
   bool _isLoading = true;
   int _bottomNavIndex = 0;
   Timer? _connectionTimer;
+  var _progressKey = UniqueKey();
 
   @override
   void initState() {
@@ -161,7 +162,7 @@ class _HomePageState extends State<HomePage> {
             onRefresh: _loadData,
           ),
           const SearchPage(),
-          const ProgressPage(),
+          ProgressPage(key: _progressKey),
           MorePage(
             onLogout: () {
               ApiService.logout();
@@ -177,7 +178,12 @@ class _HomePageState extends State<HomePage> {
       ),
       bottomNavigationBar: BottomNavigationBar(
         currentIndex: _bottomNavIndex,
-        onTap: (index) => setState(() => _bottomNavIndex = index),
+        onTap: (index) {
+          setState(() {
+            _bottomNavIndex = index;
+            if (index == 2) _progressKey = UniqueKey();
+          });
+        },
         items: const [
           BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Diary'),
           BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
