@@ -2,6 +2,7 @@ import 'dart:math';
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../models/daily_summary.dart';
+import '../services/api_service.dart';
 
 class CalorieRingCard extends StatelessWidget {
   final DailySummary summary;
@@ -11,7 +12,7 @@ class CalorieRingCard extends StatelessWidget {
   @override
   Widget build(BuildContext context) {
     final consumed = summary.totalCalories.toDouble();
-    final goal = summary.calorieGoal.toDouble();
+    final goal = ApiService.dailyCalorieGoal.toDouble();
     final progress = goal > 0 ? consumed / goal : 0.0;
     final remaining = goal - consumed;
 
@@ -44,14 +45,14 @@ class CalorieRingCard extends StatelessWidget {
                       ),
                       const SizedBox(height: 2),
                       Text(
-                        'consumed',
+                        'consommé',
                         style: Theme.of(context).textTheme.bodySmall?.copyWith(
                           color: AppColors.textGray,
                         ),
                       ),
                       const SizedBox(height: 4),
                       Text(
-                        '${remaining.toInt()} cal left',
+                        '${remaining.toInt()} cal restantes',
                         style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                           color: AppColors.primaryBlue,
                           fontWeight: FontWeight.w600,

@@ -112,33 +112,23 @@ class _HomePageState extends State<HomePage> {
     if (date.year == today.year &&
         date.month == today.month &&
         date.day == today.day) {
-      return 'Today';
+      return 'Aujourd\'hui';
     }
     final yesterday = today.subtract(const Duration(days: 1));
     if (date.year == yesterday.year &&
         date.month == yesterday.month &&
         date.day == yesterday.day) {
-      return 'Yesterday';
+      return 'Hier';
     }
     final tomorrow = today.add(const Duration(days: 1));
     if (date.year == tomorrow.year &&
         date.month == tomorrow.month &&
         date.day == tomorrow.day) {
-      return 'Tomorrow';
+      return 'Demain';
     }
     const months = [
-      'Jan',
-      'Feb',
-      'Mar',
-      'Apr',
-      'May',
-      'Jun',
-      'Jul',
-      'Aug',
-      'Sep',
-      'Oct',
-      'Nov',
-      'Dec',
+      'Jan', 'Fév', 'Mar', 'Avr', 'Mai', 'Juin',
+      'Juil', 'Aoû', 'Sep', 'Oct', 'Nov', 'Déc',
     ];
     return '${months[date.month - 1]} ${date.day}, ${date.year}';
   }
@@ -173,6 +163,10 @@ class _HomePageState extends State<HomePage> {
                 (route) => false,
               );
             },
+            onProfileUpdated: () {
+              _loadData();
+              setState(() {});
+            },
           ),
         ],
       ),
@@ -185,13 +179,13 @@ class _HomePageState extends State<HomePage> {
           });
         },
         items: const [
-          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Diary'),
-          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Search'),
+          BottomNavigationBarItem(icon: Icon(Icons.home), label: 'Journal'),
+          BottomNavigationBarItem(icon: Icon(Icons.search), label: 'Recherche'),
           BottomNavigationBarItem(
             icon: Icon(Icons.bar_chart),
-            label: 'Progress',
+            label: 'Progrès',
           ),
-          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: 'More'),
+          BottomNavigationBarItem(icon: Icon(Icons.more_horiz), label: 'Plus'),
         ],
       ),
     );

@@ -4,11 +4,15 @@ import '../models/daily_summary.dart';
 
 class ApiService {
   ApiService._();
-  static const String _baseUrl = 'http://192.168.1.114:8080/api';
-  //static const String _baseUrl = 'http://localhost:8080/api';
+  static const String _baseUrl = 'http://178.104.13.55:4080/api';
   static String? token;
 
   static bool isConnected = false;
+
+  static double proteinRatio = 40.0;
+  static double fatRatio = 20.0;
+  static double carbsRatio = 40.0;
+  static int dailyCalorieGoal = 2000;
 
   static Map<String, String> get _headers => {
     'Content-Type': 'application/json',
@@ -42,6 +46,10 @@ class ApiService {
     }
     token = body['token'] as String?;
     isConnected = true;
+    dailyCalorieGoal = body['dailyCalorieGoal'] as int? ?? 2000;
+    proteinRatio = (body['proteinRatio'] as num?)?.toDouble() ?? 30.0;
+    fatRatio = (body['fatRatio'] as num?)?.toDouble() ?? 30.0;
+    carbsRatio = (body['carbsRatio'] as num?)?.toDouble() ?? 40.0;
     return body;
   }
 
@@ -67,6 +75,55 @@ class ApiService {
     }
     token = body['token'] as String?;
     isConnected = true;
+    dailyCalorieGoal = body['dailyCalorieGoal'] as int? ?? 2000;
+    proteinRatio = (body['proteinRatio'] as num?)?.toDouble() ?? 30.0;
+    fatRatio = (body['fatRatio'] as num?)?.toDouble() ?? 30.0;
+    carbsRatio = (body['carbsRatio'] as num?)?.toDouble() ?? 40.0;
+    return body;
+  }
+
+  static Future<Map<String, dynamic>> updateProfile({
+    String? name,
+    int? dailyCalorieGoal,
+    double? proteinRatio,
+    double? fatRatio,
+    double? carbsRatio,
+  }) async {
+    final response = await http.put(
+      Uri.parse('$_baseUrl/user/profile'),
+      headers: _headers,
+      body: jsonEncode({
+        if (name != null) 'name': name,
+        if (dailyCalorieGoal != null) 'dailyCalorieGoal': dailyCalorieGoal,
+        if (proteinRatio != null) 'proteinRatio': proteinRatio,
+        if (fatRatio != null) 'fatRatio': fatRatio,
+        if (carbsRatio != null) 'carbsRatio': carbsRatio,
+      }),
+    );
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    if (response.statusCode != 200) {
+      throw Exception(body['error'] as String? ?? 'Failed to update profile');
+    }
+    ApiService.dailyCalorieGoal = body['dailyCalorieGoal'] as int? ?? ApiService.dailyCalorieGoal;
+    ApiService.proteinRatio = (body['proteinRatio'] as num?)?.toDouble() ?? ApiService.proteinRatio;
+    ApiService.fatRatio = (body['fatRatio'] as num?)?.toDouble() ?? ApiService.fatRatio;
+    ApiService.carbsRatio = (body['carbsRatio'] as num?)?.toDouble() ?? ApiService.carbsRatio;
+    return body;
+  }
+
+  static Future<Map<String, dynamic>> getProfile() async {
+    final response = await http.get(
+      Uri.parse('$_baseUrl/user/profile'),
+      headers: _headers,
+    );
+    final body = jsonDecode(response.body) as Map<String, dynamic>;
+    if (response.statusCode != 200) {
+      throw Exception(body['error'] as String? ?? 'Failed to load profile');
+    }
+    dailyCalorieGoal = body['dailyCalorieGoal'] as int? ?? 2000;
+    proteinRatio = (body['proteinRatio'] as num?)?.toDouble() ?? 30.0;
+    fatRatio = (body['fatRatio'] as num?)?.toDouble() ?? 30.0;
+    carbsRatio = (body['carbsRatio'] as num?)?.toDouble() ?? 40.0;
     return body;
   }
 

@@ -1,5 +1,5 @@
 name: macrotrack_frontend
-description: "A new Flutter project."
+description: "Full-stack nutrition tracking app."
 publish_to: 'none'
 version: 0.1.0+1
 
@@ -11,12 +11,21 @@ dependencies:
   flutter:
     sdk: flutter
   http: ^1.2.0
+  mobile_scanner: ^6.0.0
   shared_preferences: ^2.3.0
 
 dev_dependencies:
+  flutter_launcher_icons: ^0.14.3
   flutter_test:
     sdk: flutter
   flutter_lints: ^6.0.0
+
+flutter_launcher_icons:
+  android: true
+  ios: true
+  image_path: "icon.png"
+  adaptive_icon_background: "#121212"
+  remove_alpha_ios: true
 
 flutter:
   uses-material-design: true

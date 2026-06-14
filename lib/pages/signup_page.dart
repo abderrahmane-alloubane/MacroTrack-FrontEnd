@@ -32,7 +32,7 @@ class _SignupPageState extends State<SignupPage> {
   Future<void> _handleSignup() async {
     if (_passwordController.text != _confirmPasswordController.text) {
       ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Passwords do not match')),
+        const SnackBar(content: Text('Les mots de passe ne correspondent pas')),
       );
       return;
     }
@@ -57,7 +57,7 @@ class _SignupPageState extends State<SignupPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
               content: Text(
-                  'Signup failed: ${e.toString().replaceFirst('Exception: ', '')}')),
+                  'Inscription échouée : ${e.toString().replaceFirst('Exception: ', '')}')),
         );
       }
     } finally {
@@ -86,7 +86,7 @@ class _SignupPageState extends State<SignupPage> {
                 ),
                 const SizedBox(height: 16),
                 Text(
-                  'Create Account',
+                  'Créer un compte',
                   style: Theme.of(context).textTheme.headlineMedium?.copyWith(
                         fontWeight: FontWeight.bold,
                         color: AppColors.textWhite,
@@ -94,7 +94,7 @@ class _SignupPageState extends State<SignupPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Start tracking your macros today',
+                  'Commencez à suivre vos macros dès aujourd\'hui',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.textGray,
                       ),
@@ -103,7 +103,7 @@ class _SignupPageState extends State<SignupPage> {
                 TextField(
                   controller: _nameController,
                   decoration: const InputDecoration(
-                    labelText: 'Full Name',
+                    labelText: 'Nom complet',
                     prefixIcon: Icon(Icons.person_outlined),
                   ),
                   textCapitalization: TextCapitalization.words,
@@ -112,7 +112,7 @@ class _SignupPageState extends State<SignupPage> {
                 TextField(
                   controller: _emailController,
                   decoration: const InputDecoration(
-                    labelText: 'Email',
+                    labelText: 'E-mail',
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                   keyboardType: TextInputType.emailAddress,
@@ -122,7 +122,7 @@ class _SignupPageState extends State<SignupPage> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    labelText: 'Password',
+                    labelText: 'Mot de passe',
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -143,7 +143,7 @@ class _SignupPageState extends State<SignupPage> {
                   controller: _confirmPasswordController,
                   obscureText: _obscureConfirm,
                   decoration: InputDecoration(
-                    labelText: 'Confirm Password',
+                    labelText: 'Confirmer le mot de passe',
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -174,7 +174,7 @@ class _SignupPageState extends State<SignupPage> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text('Create Account'),
+                        : const Text('Créer un compte'),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -182,12 +182,12 @@ class _SignupPageState extends State<SignupPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      'Already have an account? ',
+                      'Déjà un compte ? ',
                       style: TextStyle(color: AppColors.textGray),
                     ),
                     TextButton(
                       onPressed: _navigateToLogin,
-                      child: const Text('Login'),
+                      child: const Text('Connexion'),
                     ),
                   ],
                 ),

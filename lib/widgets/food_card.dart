@@ -25,7 +25,7 @@ class FoodCard extends StatelessWidget {
                   children: [
                     Text(
                       product.name,
-                      style: const TextStyle(
+                      style: TextStyle(
                         fontWeight: FontWeight.w600,
                         fontSize: 15,
                         color: AppColors.textWhite,
@@ -37,7 +37,7 @@ class FoodCard extends StatelessWidget {
                       const SizedBox(height: 2),
                       Text(
                         product.brand!,
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.textDarkGray,
                           fontSize: 13,
                         ),
@@ -49,7 +49,7 @@ class FoodCard extends StatelessWidget {
                         if (product.calories > 0)
                           Text(
                             '${product.calories} cal',
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.calorieColor,
                               fontWeight: FontWeight.w600,
                               fontSize: 13,
@@ -57,7 +57,7 @@ class FoodCard extends StatelessWidget {
                           ),
                         if (product.carbs != null) ...[
                           const SizedBox(width: 12),
-                          _miniMacro('C', product.carbs!, AppColors.carbColor),
+                          _miniMacro('G', product.carbs!, AppColors.carbColor),
                         ],
                         if (product.protein != null) ...[
                           const SizedBox(width: 8),
@@ -69,14 +69,14 @@ class FoodCard extends StatelessWidget {
                         ],
                         if (product.fat != null) ...[
                           const SizedBox(width: 8),
-                          _miniMacro('F', product.fat!, AppColors.fatColor),
+                          _miniMacro('L', product.fat!, AppColors.fatColor),
                         ],
                       ],
                     ),
                   ],
                 ),
               ),
-              const Icon(Icons.chevron_right, color: AppColors.textDarkGray),
+              Icon(Icons.chevron_right, color: AppColors.textDarkGray),
             ],
           ),
         ),

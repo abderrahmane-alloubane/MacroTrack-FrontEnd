@@ -43,27 +43,11 @@ class _LoginPageState extends State<LoginPage> {
     } catch (e) {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
-          SnackBar(content: Text('Login failed: ${e.toString().replaceFirst('Exception: ', '')}')),
+          SnackBar(content: Text('Connexion échouée : ${e.toString().replaceFirst('Exception: ', '')}')),
         );
       }
     } finally {
       if (mounted) setState(() => _isLoading = false);
-    }
-  }
-
-  void _handleForgotPassword() async {
-    final email = _emailController.text.trim();
-    if (email.isEmpty) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Please enter your email first')),
-      );
-      return;
-    }
-    await ApiService.forgotPassword(email);
-    if (mounted) {
-      ScaffoldMessenger.of(context).showSnackBar(
-        const SnackBar(content: Text('Password reset link sent to your email')),
-      );
     }
   }
 
@@ -99,7 +83,7 @@ class _LoginPageState extends State<LoginPage> {
                 ),
                 const SizedBox(height: 8),
                 Text(
-                  'Track your macros, reach your goals',
+                  'Suivez vos macros, atteignez vos objectifs',
                   style: Theme.of(context).textTheme.bodyMedium?.copyWith(
                         color: AppColors.textGray,
                       ),
@@ -108,7 +92,7 @@ class _LoginPageState extends State<LoginPage> {
                 TextField(
                   controller: _emailController,
                   decoration: const InputDecoration(
-                    labelText: 'Email',
+                    labelText: 'E-mail',
                     prefixIcon: Icon(Icons.email_outlined),
                   ),
                   keyboardType: TextInputType.emailAddress,
@@ -118,7 +102,7 @@ class _LoginPageState extends State<LoginPage> {
                   controller: _passwordController,
                   obscureText: _obscurePassword,
                   decoration: InputDecoration(
-                    labelText: 'Password',
+                    labelText: 'Mot de passe',
                     prefixIcon: const Icon(Icons.lock_outlined),
                     suffixIcon: IconButton(
                       icon: Icon(
@@ -134,15 +118,7 @@ class _LoginPageState extends State<LoginPage> {
                     ),
                   ),
                 ),
-                const SizedBox(height: 8),
-                Align(
-                  alignment: Alignment.centerRight,
-                  child: TextButton(
-                    onPressed: _handleForgotPassword,
-                    child: const Text('Forgot Password?'),
-                  ),
-                ),
-                const SizedBox(height: 16),
+                const SizedBox(height: 24),
                 SizedBox(
                   width: double.infinity,
                   height: 50,
@@ -157,7 +133,7 @@ class _LoginPageState extends State<LoginPage> {
                               color: Colors.white,
                             ),
                           )
-                        : const Text('Login'),
+                        : const Text('Connexion'),
                   ),
                 ),
                 const SizedBox(height: 24),
@@ -165,12 +141,12 @@ class _LoginPageState extends State<LoginPage> {
                   mainAxisAlignment: MainAxisAlignment.center,
                   children: [
                     Text(
-                      "Don't have an account? ",
+                      "Pas encore de compte ? ",
                       style: TextStyle(color: AppColors.textGray),
                     ),
                     TextButton(
                       onPressed: _navigateToSignup,
-                      child: const Text('Sign Up'),
+                      child: const Text("S'inscrire"),
                     ),
                   ],
                 ),

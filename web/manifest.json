@@ -1,11 +1,11 @@
 {
-    "name": "macrotrack_frontend",
-    "short_name": "macrotrack_frontend",
+    "name": "MacroTrack",
+    "short_name": "MacroTrack",
     "start_url": ".",
     "display": "standalone",
     "background_color": "#0175C2",
     "theme_color": "#0175C2",
-    "description": "A new Flutter project.",
+    "description": "Full-stack nutrition tracking app.",
     "orientation": "portrait-primary",
     "prefer_related_applications": false,
     "icons": [

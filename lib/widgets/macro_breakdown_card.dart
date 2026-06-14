@@ -1,6 +1,7 @@
 import 'package:flutter/material.dart';
 import '../theme/app_theme.dart';
 import '../models/daily_summary.dart';
+import '../services/api_service.dart';
 
 class MacroBreakdownCard extends StatelessWidget {
   final DailySummary summary;
@@ -9,6 +10,9 @@ class MacroBreakdownCard extends StatelessWidget {
 
   @override
   Widget build(BuildContext context) {
+    final carbsGoal = _macroGoal(ApiService.carbsRatio / 100, 4);
+    final proteinGoal = _macroGoal(ApiService.proteinRatio / 100, 4);
+    final fatGoal = _macroGoal(ApiService.fatRatio / 100, 9);
     return Card(
       child: Padding(
         padding: const EdgeInsets.all(16),
@@ -16,7 +20,7 @@ class MacroBreakdownCard extends StatelessWidget {
           crossAxisAlignment: CrossAxisAlignment.start,
           children: [
             Text(
-              'Macronutrients',
+              'Macronutriments',
               style: Theme.of(context).textTheme.titleMedium?.copyWith(
                 fontWeight: FontWeight.w600,
                 color: AppColors.textWhite,
@@ -24,25 +28,25 @@ class MacroBreakdownCard extends StatelessWidget {
             ),
             const SizedBox(height: 16),
             MacroRow(
-              label: 'Carbs',
+              label: 'Glucides',
               consumed: summary.totalCarbs,
-              goal: _macroGoal(0.50),
+              goal: carbsGoal,
               color: AppColors.carbColor,
               unit: 'g',
             ),
             const SizedBox(height: 12),
             MacroRow(
-              label: 'Protein',
+              label: 'Protéines',
               consumed: summary.totalProtein,
-              goal: _macroGoal(0.25),
+              goal: proteinGoal,
               color: AppColors.proteinColor,
               unit: 'g',
             ),
             const SizedBox(height: 12),
             MacroRow(
-              label: 'Fat',
+              label: 'Lipides',
               consumed: summary.totalFat,
-              goal: _macroGoal(0.25),
+              goal: fatGoal,
               color: AppColors.fatColor,
               unit: 'g',
             ),
@@ -52,8 +56,8 @@ class MacroBreakdownCard extends StatelessWidget {
     );
   }
 
-  double _macroGoal(double fraction) {
-    return (summary.calorieGoal * fraction) / 4;
+  double _macroGoal(double fraction, int calPerGram) {
+    return (ApiService.dailyCalorieGoal * fraction) / calPerGram;
   }
 }
 
@@ -93,12 +97,12 @@ class MacroRow extends StatelessWidget {
                   ),
                 ),
                 const SizedBox(width: 8),
-                Text(label, style: const TextStyle(color: AppColors.textGray)),
-              ],
-            ),
-            Text(
-              '${consumed.toStringAsFixed(1)}$unit / ${goal.toInt()}$unit',
-              style: const TextStyle(color: AppColors.textGray),
+                Text(label, style: TextStyle(color: AppColors.textGray)),
+            ],
+          ),
+          Text(
+            '${consumed.toStringAsFixed(1)}$unit / ${goal.toInt()}$unit',
+            style: TextStyle(color: AppColors.textGray),
             ),
           ],
         ),

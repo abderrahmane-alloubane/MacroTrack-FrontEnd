@@ -57,7 +57,7 @@ class DiaryPage extends StatelessWidget {
           Padding(
             padding: const EdgeInsets.only(right: 4),
             child: Tooltip(
-              message: ApiService.isConnected ? 'Connected' : 'Disconnected',
+              message: ApiService.isConnected ? 'Connecté' : 'Déconnecté',
               child: Icon(
                 Icons.circle,
                 size: 12,
@@ -94,9 +94,9 @@ class DiaryPage extends StatelessWidget {
                         ),
                       ],
                     )
-                  : const Center(
-                      child: Text(
-                        'Could not load data.\nPull down to retry.',
+                  : Center(
+                      child:                       Text(
+                        'Impossible de charger les données.\nTirez vers le bas pour réessayer.',
                         textAlign: TextAlign.center,
                         style: TextStyle(color: AppColors.textGray),
                       ),

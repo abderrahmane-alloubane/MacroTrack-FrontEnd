@@ -10,16 +10,43 @@ void main() {
   runApp(const MainApp());
 }
 
-class MainApp extends StatelessWidget {
+class MainApp extends StatefulWidget {
   const MainApp({super.key});
 
   @override
+  State<MainApp> createState() => _MainAppState();
+}
+
+class _MainAppState extends State<MainApp> {
+  bool _ready = false;
+
+  @override
+  void initState() {
+    super.initState();
+    _restoreTheme();
+  }
+
+  Future<void> _restoreTheme() async {
+    final mode = await LocalStorageService.getThemeMode();
+    AppTheme.themeNotifier.value = mode;
+    setState(() => _ready = true);
+  }
+
+  @override
   Widget build(BuildContext context) {
-    return MaterialApp(
-      title: 'MacroTrack',
-      debugShowCheckedModeBanner: false,
-      theme: AppTheme.darkTheme,
-      home: const SplashGate(),
+    if (!_ready) return const MaterialApp(home: SizedBox.shrink());
+    return ListenableBuilder(
+      listenable: AppTheme.themeNotifier,
+      builder: (context, _) {
+        return MaterialApp(
+          title: 'MacroTrack',
+          debugShowCheckedModeBanner: false,
+          theme: AppTheme.lightTheme,
+          darkTheme: AppTheme.darkTheme,
+          themeMode: AppTheme.themeNotifier.value,
+          home: const SplashGate(),
+        );
+      },
     );
   }
 }

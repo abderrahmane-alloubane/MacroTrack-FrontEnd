@@ -94,7 +94,7 @@ class _ProgressPageState extends State<ProgressPage> {
   @override
   Widget build(BuildContext context) {
     return Scaffold(
-      appBar: AppBar(title: const Text('Weekly Progress')),
+      appBar: AppBar(title: const Text('Progrès hebdomadaire')),
       body: _buildBody(),
     );
   }
@@ -108,11 +108,11 @@ class _ProgressPageState extends State<ProgressPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            Text('Failed to load data',
+            Text('Échec de chargement des données',
                 style: TextStyle(color: AppColors.errorRed)),
             const SizedBox(height: 8),
             ElevatedButton(
-                onPressed: _loadWeeklyData, child: const Text('Retry')),
+                onPressed: _loadWeeklyData, child: const Text('Réessayer')),
           ],
         ),
       );
@@ -164,7 +164,7 @@ class _ProgressPageState extends State<ProgressPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _sectionTitle('Weekly Caloric Intake'),
+        _sectionTitle('Apport calorique hebdomadaire'),
         const SizedBox(height: 16),
         SizedBox(
           height: 280,
@@ -227,13 +227,13 @@ class _ProgressPageState extends State<ProgressPage> {
           tooltipMargin: -10,
           getTooltipItem: (group, groupIndex, rod, rodIndex) {
             final weekDay = switch (group.x) {
-              0 => 'Monday',
-              1 => 'Tuesday',
-              2 => 'Wednesday',
-              3 => 'Thursday',
-              4 => 'Friday',
-              5 => 'Saturday',
-              6 => 'Sunday',
+              0 => 'Lundi',
+              1 => 'Mardi',
+              2 => 'Mercredi',
+              3 => 'Jeudi',
+              4 => 'Vendredi',
+              5 => 'Samedi',
+              6 => 'Dimanche',
               _ => '',
             };
             final value = rod.toY - 1;
@@ -304,13 +304,13 @@ class _ProgressPageState extends State<ProgressPage> {
       fontSize: 14,
     );
     String text = switch (value.toInt()) {
-      0 => 'M',
-      1 => 'T',
-      2 => 'W',
-      3 => 'T',
-      4 => 'F',
-      5 => 'S',
-      6 => 'S',
+      0 => 'Lu',
+      1 => 'Ma',
+      2 => 'Me',
+      3 => 'Je',
+      4 => 'Ve',
+      5 => 'Sa',
+      6 => 'Di',
       _ => '',
     };
     return SideTitleWidget(
@@ -349,7 +349,7 @@ class _ProgressPageState extends State<ProgressPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _sectionTitle('Macro Trends'),
+        _sectionTitle('Tendance des macros'),
         const SizedBox(height: 16),
         SizedBox(
           height: 250,
@@ -368,11 +368,11 @@ class _ProgressPageState extends State<ProgressPage> {
     return Row(
       mainAxisAlignment: MainAxisAlignment.center,
       children: [
-        _legendDot(AppColors.carbColor, 'Carbs'),
+        _legendDot(AppColors.carbColor, 'Glucides'),
         const SizedBox(width: 20),
-        _legendDot(AppColors.proteinColor, 'Protein'),
+        _legendDot(AppColors.proteinColor, 'Protéines'),
         const SizedBox(width: 20),
-        _legendDot(AppColors.fatColor, 'Fats'),
+        _legendDot(AppColors.fatColor, 'Lipides'),
       ],
     );
   }
@@ -385,7 +385,7 @@ class _ProgressPageState extends State<ProgressPage> {
           color: color, borderRadius: BorderRadius.circular(2),
         )),
         const SizedBox(width: 6),
-        Text(label, style: const TextStyle(
+        Text(label, style: TextStyle(
           color: AppColors.textGray, fontSize: 12,
         )),
       ],
@@ -399,7 +399,7 @@ class _ProgressPageState extends State<ProgressPage> {
     final fatsSpots = List.generate(7, (i) => FlSpot(i.toDouble(), data[i][1]));
 
     final macroColors = [AppColors.carbColor, AppColors.proteinColor, AppColors.fatColor];
-    final macroNames = ['Carbs', 'Protein', 'Fats'];
+    final macroNames = ['Glucides', 'Protéines', 'Lipides'];
 
     return LineChartData(
       lineTouchData: LineTouchData(
@@ -499,13 +499,13 @@ class _ProgressPageState extends State<ProgressPage> {
       fontSize: 13,
     );
     String text = switch (value.toInt()) {
-      0 => 'M',
-      1 => 'T',
-      2 => 'W',
-      3 => 'T',
-      4 => 'F',
-      5 => 'S',
-      6 => 'S',
+      0 => 'Lu',
+      1 => 'Ma',
+      2 => 'Me',
+      3 => 'Je',
+      4 => 'Ve',
+      5 => 'Sa',
+      6 => 'Di',
       _ => '',
     };
     return SideTitleWidget(
@@ -522,7 +522,7 @@ class _ProgressPageState extends State<ProgressPage> {
       space: 4,
       child: Text(
         value.toInt().toString(),
-        style: const TextStyle(
+        style: TextStyle(
           color: AppColors.textDarkGray,
           fontSize: 11,
         ),
@@ -538,7 +538,7 @@ class _ProgressPageState extends State<ProgressPage> {
     return Column(
       crossAxisAlignment: CrossAxisAlignment.stretch,
       children: [
-        _sectionTitle('Macro Distribution'),
+        _sectionTitle('Répartition des macros'),
         const SizedBox(height: 16),
         _buildPieChart(),
       ],
@@ -630,19 +630,19 @@ class _ProgressPageState extends State<ProgressPage> {
             children: [
               Indicator(
                 color: AppColors.carbColor,
-                text: 'Carbs $carbsPct%',
+                text: 'Glucides $carbsPct%',
                 isSquare: true,
               ),
               const SizedBox(height: 8),
               Indicator(
                 color: AppColors.proteinColor,
-                text: 'Protein $proteinPct%',
+                text: 'Protéines $proteinPct%',
                 isSquare: true,
               ),
               const SizedBox(height: 8),
               Indicator(
                 color: AppColors.fatColor,
-                text: 'Fat $fatPct%',
+                text: 'Lipides $fatPct%',
                 isSquare: true,
               ),
             ],

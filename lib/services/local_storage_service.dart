@@ -1,4 +1,5 @@
 import 'dart:convert';
+import 'package:flutter/material.dart';
 import 'package:shared_preferences/shared_preferences.dart';
 import '../models/daily_summary.dart';
 
@@ -7,6 +8,7 @@ class LocalStorageService {
 
   static const _tokenKey = 'auth_token';
   static const _userKey = 'user_data';
+  static const _themeKey = 'theme_mode';
   static const _dailyPrefix = 'daily_summary_';
 
   static Future<void> saveToken(String token) async {
@@ -49,6 +51,18 @@ class LocalStorageService {
   static Future<void> removeDailySummary(String date) async {
     final prefs = await SharedPreferences.getInstance();
     await prefs.remove('$_dailyPrefix$date');
+  }
+
+  static Future<void> saveThemeMode(ThemeMode mode) async {
+    final prefs = await SharedPreferences.getInstance();
+    await prefs.setString(_themeKey, mode == ThemeMode.dark ? 'dark' : 'light');
+  }
+
+  static Future<ThemeMode> getThemeMode() async {
+    final prefs = await SharedPreferences.getInstance();
+    final value = prefs.getString(_themeKey);
+    if (value == 'light') return ThemeMode.light;
+    return ThemeMode.dark;
   }
 
   static Future<void> clear() async {

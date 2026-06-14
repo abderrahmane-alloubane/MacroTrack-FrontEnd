@@ -29,7 +29,7 @@ class MealCard extends StatelessWidget {
       if (context.mounted) {
         ScaffoldMessenger.of(
           context,
-        ).showSnackBar(const SnackBar(content: Text('Item removed')));
+        ).showSnackBar(const SnackBar(content: Text('Aliment retiré')));
       }
       await onRefresh();
     } catch (e) {
@@ -37,7 +37,7 @@ class MealCard extends StatelessWidget {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-              'Failed to delete: ${e.toString().replaceFirst('Exception: ', '')}',
+              'Échec de la suppression : ${e.toString().replaceFirst('Exception: ', '')}',
             ),
           ),
         );
@@ -77,7 +77,7 @@ class MealCard extends StatelessWidget {
                       ),
                     ),
                     const SizedBox(width: 4),
-                    const Text(
+                    Text(
                       'cal',
                       style: TextStyle(
                         color: AppColors.textDarkGray,
@@ -106,10 +106,10 @@ class MealCard extends StatelessWidget {
               ],
             ),
             if (items.isEmpty)
-              const Padding(
-                padding: EdgeInsets.only(top: 8),
+              Padding(
+                padding: const EdgeInsets.only(top: 8),
                 child: Text(
-                  'No foods recorded',
+                  'Aucun aliment enregistré',
                   style: TextStyle(color: AppColors.textDarkGray, fontSize: 13),
                 ),
               )
@@ -122,7 +122,7 @@ class MealCard extends StatelessWidget {
                       Expanded(
                         child: Text(
                           item.name,
-                          style: const TextStyle(
+                          style: TextStyle(
                             color: AppColors.textGray,
                             fontSize: 14,
                           ),
@@ -132,7 +132,7 @@ class MealCard extends StatelessWidget {
                       const SizedBox(width: 8),
                       Text(
                         '${item.calories} cal',
-                        style: const TextStyle(
+                        style: TextStyle(
                           color: AppColors.textDarkGray,
                           fontSize: 14,
                         ),
@@ -153,7 +153,7 @@ class MealCard extends StatelessWidget {
                           children: [
                             Icon(Icons.close, size: 16),
                             SizedBox(width: 2),
-                            Text('Remove', style: TextStyle(fontSize: 12)),
+                            Text('Retirer', style: TextStyle(fontSize: 12)),
                           ],
                         ),
                       ),

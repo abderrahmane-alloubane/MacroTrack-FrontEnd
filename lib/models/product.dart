@@ -67,17 +67,17 @@ class Product {
 
   factory Product.fromDetailsJson(Map<String, dynamic> json) {
     return Product(
-      id: (json['id'] as String?) ?? '',
-      name: (json['name'] as String?) ?? 'Unknown',
-      brand: null,
-      servingSize: json['servingSize'] as String?,
-      calories: _parseInt(json['servingCal']),
-      carbs: _parseDouble(json['servingCarbs']),
-      protein: _parseDouble(json['servingProtein']),
-      fat: _parseDouble(json['servingFat']),
-      sugar: _parseDouble(json['servingSugar']),
-      saturatedFat: _parseDouble(json['servingSatFat']),
-      ServingSize: _parseNutrimentDouble(json['serving_size']),
+      id: (json['id'] ?? json['_id'] ?? '') as String,
+      name: (json['name'] ?? json['product_name'] ?? 'Unknown') as String,
+      brand: json['brands'] as String?,
+      servingSize: (json['servingSize'] ?? json['serving_size']) as String?,
+      calories: _parseInt(json['servingCal'] ?? json['serving_cal']),
+      carbs: _parseDouble(json['servingCarbs'] ?? json['serving_carbs']),
+      protein: _parseDouble(json['servingProtein'] ?? json['serving_Protein'] ?? json['serving_protein']),
+      fat: _parseDouble(json['servingFat'] ?? json['serving_fat']),
+      sugar: _parseDouble(json['servingSugar'] ?? json['serving_sugar']),
+      saturatedFat: _parseDouble(json['servingSatFat'] ?? json['serving_satFat'] ?? json['serving_sat_fat']),
+      ServingSize: _parseNutrimentDouble(json['serving_size'] ?? json['servingSize']),
     );
   }
 

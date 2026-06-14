@@ -4,6 +4,7 @@ import '../theme/app_theme.dart';
 import '../services/api_service.dart';
 import '../models/product.dart';
 import '../widgets/food_card.dart';
+import 'barcode_scanner_page.dart';
 
 class SearchPage extends StatefulWidget {
   final String? initialMealType;
@@ -33,7 +34,7 @@ class _SearchPageState extends State<SearchPage> {
     return _results.sublist(start, end);
   }
 
-  static const _mealTypes = ['Breakfast', 'Lunch', 'Dinner', 'Snacks'];
+  static const _mealTypes = ['Petit-déjeuner', 'Déjeuner', 'Dîner', 'Snacks'];
 
   @override
   void initState() {
@@ -87,7 +88,7 @@ class _SearchPageState extends State<SearchPage> {
   }
 
   void _showAddSheet(Product product) {
-    final mealType = _selectedMealType ?? 'Breakfast';
+    final mealType = _selectedMealType ?? 'Petit-déjeuner';
     final defaultGrams = (product.ServingSize != 0.0 && product.ServingSize != null) ? product.ServingSize : 100; 
     final servingController = TextEditingController(
       text: defaultGrams?.toStringAsFixed(0),
@@ -141,15 +142,15 @@ class _SearchPageState extends State<SearchPage> {
                       const SizedBox(height: 4),
                       Text(
                         product.brand!,
-                        style: const TextStyle(color: AppColors.textGray),
+                        style: TextStyle(color: AppColors.textGray),
                       ),
                     ],
                     const SizedBox(height: 12),
                     Row(
                       children: [
                         Text(
-                          'Per ${product.servingSize ?? "${defaultGrams?.toStringAsFixed(0)}g"}',
-                          style: const TextStyle(
+                          'Pour ${product.servingSize ?? "${defaultGrams?.toStringAsFixed(0)}g"}',
+                          style: TextStyle(
                             color: AppColors.textGray,
                             fontSize: 13,
                           ),
@@ -161,7 +162,7 @@ class _SearchPageState extends State<SearchPage> {
                           child: TextField(
                             controller: servingController,
                             keyboardType: TextInputType.number,
-                            style: const TextStyle(
+                            style: TextStyle(
                               color: AppColors.textWhite,
                               fontSize: 14,
                             ),
@@ -177,7 +178,7 @@ class _SearchPageState extends State<SearchPage> {
                                 borderSide: BorderSide.none,
                               ),
                               suffixText: 'g',
-                              suffixStyle: const TextStyle(
+                              suffixStyle: TextStyle(
                                 color: AppColors.textDarkGray,
                                 fontSize: 13,
                               ),
@@ -190,8 +191,8 @@ class _SearchPageState extends State<SearchPage> {
                     const SizedBox(height: 12),
                     _macroChips(scaledCalories, scaledCarbs, scaledProtein, scaledFat),
                     const SizedBox(height: 20),
-                    const Text(
-                      'Add to',
+                    Text(
+                      'Ajouter à',
                       style: TextStyle(
                           color: AppColors.textGray,
                           fontWeight: FontWeight.w500),
@@ -213,7 +214,7 @@ class _SearchPageState extends State<SearchPage> {
                                 value: t,
                                 child: Text(t,
                                     style:
-                                        const TextStyle(color: AppColors.textWhite)),
+                                        TextStyle(color: AppColors.textWhite)),
                               ))
                           .toList(),
                       onChanged: (v) {
@@ -238,7 +239,7 @@ class _SearchPageState extends State<SearchPage> {
                           );
                         },
                         icon: const Icon(Icons.add),
-                        label: const Text('Add to Diary'),
+                        label: const Text('Ajouter au journal'),
                       ),
                     ),
                   ],
@@ -254,9 +255,9 @@ class _SearchPageState extends State<SearchPage> {
   Widget _macroChips(int calories, double? carbs, double? protein, double? fat) {
     final items = [
       if (calories > 0) _chip('$calories cal', AppColors.calorieColor),
-      if (carbs != null) _chip('C: ${carbs.toStringAsFixed(0)}g', AppColors.carbColor),
+      if (carbs != null) _chip('G: ${carbs.toStringAsFixed(0)}g', AppColors.carbColor),
       if (protein != null) _chip('P: ${protein.toStringAsFixed(0)}g', AppColors.proteinColor),
-      if (fat != null) _chip('F: ${fat.toStringAsFixed(0)}g', AppColors.fatColor),
+      if (fat != null) _chip('L: ${fat.toStringAsFixed(0)}g', AppColors.fatColor),
     ];
     return Wrap(
       spacing: 8,
@@ -309,7 +310,7 @@ class _SearchPageState extends State<SearchPage> {
       if (mounted) {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
-            content: Text('Added ${product.name} to $mealType'),
+            content: Text('Ajouté ${product.name} à $mealType'),
             backgroundColor: AppColors.successGreen,
           ),
         );
@@ -328,9 +329,44 @@ class _SearchPageState extends State<SearchPage> {
         ScaffoldMessenger.of(context).showSnackBar(
           SnackBar(
             content: Text(
-                'Failed to add: ${e.toString().replaceFirst('Exception: ', '')}'),
+                'Échec d\'ajout : ${e.toString().replaceFirst('Exception: ', '')}'),
           ),
         );
+      }
+    }
+  }
+
+  Future<void> _scanBarcode() async {
+    final barcode = await Navigator.push<String>(
+      context,
+      MaterialPageRoute(builder: (_) => const BarcodeScannerPage()),
+    );
+    if (barcode == null || barcode.isEmpty || !mounted) return;
+
+    setState(() {
+      _isSearching = true;
+      _error = null;
+      _hasSearched = true;
+    });
+
+    try {
+      final raw = await ApiService.getProductDetails(barcode);
+      final json = jsonDecode(raw) as Map<String, dynamic>;
+      final product = Product.fromDetailsJson(json);
+      if (mounted) {
+        setState(() {
+          _results = [product];
+          _currentPage = 0;
+          _isSearching = false;
+        });
+        _showAddSheet(product);
+      }
+    } catch (e) {
+      if (mounted) {
+        setState(() {
+          _error = e.toString().replaceFirst('Exception: ', '');
+          _isSearching = false;
+        });
       }
     }
   }
@@ -341,10 +377,10 @@ class _SearchPageState extends State<SearchPage> {
       appBar: AppBar(
         title: TextField(
           controller: _queryController,
-          style: const TextStyle(color: AppColors.textWhite),
+          style: TextStyle(color: AppColors.textWhite),
           decoration: InputDecoration(
-            hintText: 'Search foods...',
-            hintStyle: const TextStyle(color: AppColors.textDarkGray),
+            hintText: 'Rechercher des aliments...',
+            hintStyle: TextStyle(color: AppColors.textDarkGray),
             filled: true,
             fillColor: AppColors.surfaceBg,
             border: OutlineInputBorder(
@@ -361,6 +397,10 @@ class _SearchPageState extends State<SearchPage> {
           IconButton(
             icon: const Icon(Icons.search),
             onPressed: _search,
+          ),
+          IconButton(
+            icon: const Icon(Icons.qr_code_scanner),
+            onPressed: _scanBarcode,
           ),
         ],
       ),
@@ -386,12 +426,12 @@ class _SearchPageState extends State<SearchPage> {
               Text(
                 _error!,
                 textAlign: TextAlign.center,
-                style: const TextStyle(color: AppColors.textGray),
+                style: TextStyle(color: AppColors.textGray),
               ),
               const SizedBox(height: 16),
               ElevatedButton(
                 onPressed: _search,
-                child: const Text('Retry'),
+                child: const Text('Réessayer'),
               ),
             ],
           ),
@@ -404,25 +444,25 @@ class _SearchPageState extends State<SearchPage> {
         child: Column(
           mainAxisSize: MainAxisSize.min,
           children: [
-            const Icon(Icons.search, size: 64, color: AppColors.textDarkGray),
+            Icon(Icons.search, size: 64, color: AppColors.textDarkGray),
             const SizedBox(height: 16),
-            const Text(
-              'Search for any food',
+            Text(
+              'Rechercher un aliment',
               style: TextStyle(
                   color: AppColors.textGray,
                   fontSize: 18,
                   fontWeight: FontWeight.w500),
             ),
             const SizedBox(height: 8),
-            const Text(
-              'Type a food name and tap search',
+            Text(
+              'Tapez un nom d\'aliment et appuyez sur Rechercher',
               style: TextStyle(color: AppColors.textDarkGray, fontSize: 14),
             ),
             if (_selectedMealType != null) ...[
               const SizedBox(height: 4),
               Text(
-                'Adding to $_selectedMealType',
-                style: const TextStyle(
+                'Ajout à $_selectedMealType',
+                style: TextStyle(
                     color: AppColors.primaryBlue, fontSize: 13),
               ),
             ],
@@ -432,9 +472,9 @@ class _SearchPageState extends State<SearchPage> {
     }
 
     if (_results.isEmpty) {
-      return const Center(
+      return Center(
         child: Text(
-          'No results found',
+          'Aucun résultat trouvé',
           style: TextStyle(color: AppColors.textGray),
         ),
       );
@@ -458,7 +498,7 @@ class _SearchPageState extends State<SearchPage> {
         if (_totalPages > 1)
           Container(
             padding: const EdgeInsets.symmetric(vertical: 12, horizontal: 24),
-            decoration: const BoxDecoration(
+            decoration: BoxDecoration(
               color: AppColors.cardBg,
               border: Border(
                 top: BorderSide(color: AppColors.surfaceBg, width: 1),
@@ -478,8 +518,8 @@ class _SearchPageState extends State<SearchPage> {
                 ),
                 const SizedBox(width: 8),
                 Text(
-                  'Page ${_currentPage + 1} of $_totalPages',
-                  style: const TextStyle(
+                  'Page ${_currentPage + 1} sur $_totalPages',
+                  style: TextStyle(
                     color: AppColors.textGray,
                     fontSize: 14,
                     fontWeight: FontWeight.w500,
