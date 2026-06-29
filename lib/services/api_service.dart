@@ -1,10 +1,11 @@
 import 'dart:convert';
 import 'package:http/http.dart' as http;
 import '../models/daily_summary.dart';
+import './api_details.dart';
 
 class ApiService {
   ApiService._();
-  static const String _baseUrl = 'http://178.104.13.55:4080/api';
+  static const String _baseUrl = api.get_adr();
   static String? token;
 
   static bool isConnected = false;
