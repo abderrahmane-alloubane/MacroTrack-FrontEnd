@@ -5,7 +5,8 @@ import './api_details.dart';
 
 class ApiService {
   ApiService._();
-  static const String _baseUrl = api.get_adr();
+  
+  static String get _baseUrl => Api().getAdr();
   static String? token;
 
   static bool isConnected = false;
@@ -94,11 +95,11 @@ class ApiService {
       Uri.parse('$_baseUrl/user/profile'),
       headers: _headers,
       body: jsonEncode({
-        if (name != null) 'name': name,
-        if (dailyCalorieGoal != null) 'dailyCalorieGoal': dailyCalorieGoal,
-        if (proteinRatio != null) 'proteinRatio': proteinRatio,
-        if (fatRatio != null) 'fatRatio': fatRatio,
-        if (carbsRatio != null) 'carbsRatio': carbsRatio,
+        'name': ?name,
+        'dailyCalorieGoal': ?dailyCalorieGoal,
+        'proteinRatio': ?proteinRatio,
+        'fatRatio': ?fatRatio,
+        'carbsRatio': ?carbsRatio,
       }),
     );
     final body = jsonDecode(response.body) as Map<String, dynamic>;
